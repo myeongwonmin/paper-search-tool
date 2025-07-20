@@ -1,0 +1,7 @@
+# requirements.txt
+# Libraries required for the paper pipeline
+
+requests
+pandas
+openpyxl
+tqdm

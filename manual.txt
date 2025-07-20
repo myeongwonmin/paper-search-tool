@@ -1,0 +1,88 @@
+# PubMed Paper Pipeline - 사용 매뉴얼
+
+## 개요
+PubMed에서 특정 저널들의 논문을 검색하고 Excel 파일로 저장하는 자동화 파이프라인입니다.
+
+## 환경 설정
+1. conda 가상환경 활성화:
+   ```bash
+   conda activate paper_research
+   ```
+
+2. 프로그램 폴더로 이동:
+   ```bash
+   cd /home/eenp/Research/papers/paper_search
+   ```
+
+## 실행 방법
+```bash
+python main.py
+```
+
+## 사용 과정
+1. 프로그램 실행 후 날짜 범위 선택 모드를 선택합니다:
+   - 1번: 특정 날짜 범위 (YYYY/MM/DD 형식)
+   - 2번: 최근 N일
+
+2. 선택한 모드에 따라 날짜를 입력합니다:
+   - 특정 날짜 범위: 시작일과 종료일을 각각 입력
+   - 최근 N일: 검색할 일수를 입력 (예: 7일)
+
+3. 프로그램이 자동으로 다음 작업을 수행합니다:
+   - config.py에 정의된 저널 목록에서 논문 검색
+   - 각 저널별로 논문 정보 수집
+   - 진행상황을 프로그레스 바로 표시
+
+## 출력
+- 결과는 output/ 폴더에 Excel 파일로 저장됩니다
+- 파일명 형식: YYMMDD_YYMMDD_Papers.xlsx
+- 예시: 250714_250721_Papers.xlsx
+
+## 검색 대상 저널
+다음 31개 저널에서 논문을 검색합니다:
+
+1. ACS Synthetic Biology
+2. Annual Review of Microbiology
+3. Bioinformatics
+4. Cell
+5. Cell Chemical Biology
+6. Cell Reports
+7. Cell Systems
+8. Chemical Science
+9. Current Opinion in Biotechnology
+10. Metabolic Engineering
+11. Nature
+12. Nature Biotechnology
+13. Nature Catalysis
+14. Nature Chemical Biology
+15. Nature Communications
+16. Nature Computational Science
+17. Nature Machine Intelligence
+18. Nature Metabolism
+19. Nature Methods
+20. Nature Microbiology
+21. Nature Reviews Molecular Cell Biology
+22. Nature Structural & Molecular Biology
+23. Nucleic Acids Research
+24. PLOS Biology
+25. PLOS Computational Biology
+26. PNAS
+27. Protein Science
+28. Science
+29. Science Advances
+30. Trends in Biochemical Sciences
+31. Trends in Biotechnology
+
+## 주의사항
+- API 서버에 부하를 주지 않기 위해 각 저널 검색 간 0.5초 지연
+- 인터넷 연결이 필요합니다
+- PubMed API 서비스 상태에 따라 결과가 달라질 수 있습니다
+
+## 파일 구조
+- main.py: 메인 실행 파일
+- config.py: 검색 대상 저널 목록
+- pubmed_client.py: PubMed API 클라이언트
+- data_extractor.py: 논문 정보 추출
+- excel_writer.py: Excel 파일 작성
+- requirements.txt: 필요 패키지 목록
+- output/: 결과 파일 저장 폴더
