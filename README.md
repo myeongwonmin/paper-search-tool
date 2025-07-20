@@ -35,6 +35,31 @@ The tool searches across 31 leading journals in life sciences, biotechnology, an
    pip install -r requirements.txt
    ```
 
+## ⚠️ Required Configuration Before Use
+
+**IMPORTANT**: Before running the tool, you must configure your unique identifiers to avoid conflicts with other users:
+
+1. **Edit `pubmed_client.py`:**
+   ```python
+   TOOL_NAME = "YourName_PaperSearch"    # Change to your unique name
+   ADMIN_EMAIL = "your.email@domain.com" # Change to your email
+   ```
+
+2. **Examples:**
+   ```python
+   TOOL_NAME = "John_PaperSearch"
+   ADMIN_EMAIL = "john.doe@university.edu"
+   ```
+   ```python
+   TOOL_NAME = "Lab2024_Papers"
+   ADMIN_EMAIL = "researcher@lab.org"
+   ```
+
+**Why this is important:**
+- Each user needs a unique tool identifier to avoid NCBI usage conflicts
+- Provides proper identification to NCBI as required by their usage guidelines
+- Ensures your usage is independent from other users of this tool
+
 ## Usage
 
 Run the main script:
