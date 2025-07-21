@@ -70,8 +70,8 @@ def main():
                 papers = data_extractor.extract_paper_info(xml_data)
                 all_papers.extend(papers)
         
-        # Be respectful to the API server
-        time.sleep(0.5)
+        # Be respectful to the API server - increased to 1 second for safety margin
+        time.sleep(1.0)
 
     if all_papers:
         print("\nFound a total of {} papers.".format(len(all_papers)))
