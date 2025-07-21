@@ -118,7 +118,7 @@ paper_search/
 
 This tool uses the free PubMed E-utilities API:
 - No API key required
-- Rate-limited to 0.5 seconds between requests
+- Rate-limited to 1.0 seconds between requests for safety margin
 - Searches public database only
 - No personal information collected or transmitted
 
