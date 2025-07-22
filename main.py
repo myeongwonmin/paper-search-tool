@@ -49,10 +49,30 @@ def get_date_range():
             except ValueError:
                 print("Invalid input. Please enter a number.")
 
+def get_keywords():
+    """Gets keywords from the user for filtering papers by title."""
+    print("\nEnter keywords to filter papers by title.")
+    print("You can enter multiple keywords separated by commas (e.g., enzyme, e. coli, deep learning)")
+    print("Leave empty to skip keyword filtering.")
+    
+    keywords_input = input("Enter keywords: ").strip()
+    
+    if not keywords_input:
+        return []
+    
+    # Split by comma and clean up whitespace
+    keywords = [keyword.strip() for keyword in keywords_input.split(",") if keyword.strip()]
+    
+    if keywords:
+        print(f"Keywords to search for: {', '.join(keywords)}")
+    
+    return keywords
+
 def main():
     """Main function to run the pipeline."""
     print("--- PubMed Paper Pipeline ---")
     start_date, end_date = get_date_range()
+    keywords = get_keywords()
     print("Searching for papers from {} to {}.".format(start_date, end_date))
     print()
 
@@ -75,7 +95,7 @@ def main():
 
     if all_papers:
         print("\nFound a total of {} papers.".format(len(all_papers)))
-        excel_writer.write_to_excel(all_papers, start_date, end_date)
+        excel_writer.write_to_excel(all_papers, start_date, end_date, keywords)
     else:
         print("\nNo papers found for the given criteria.")
 
