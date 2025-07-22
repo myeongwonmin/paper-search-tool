@@ -7,7 +7,8 @@ A Python tool for automatically searching and collecting research papers from mu
 - 🔍 Search papers from 39 major scientific journals
 - 📅 Flexible date range selection (specific dates or recent N days)
 - 🔑 **NEW**: Keyword filtering with automatic highlighting
-- 📊 Export results to Excel format with multiple sheets
+- 📊 Export results to Excel format with multiple sheets and AutoFilter
+- 🔽 **NEW**: AutoFilter dropdowns for easy data sorting and filtering
 - 🚀 Progress tracking with visual progress bar
 - 🛡️ Rate-limited API calls to respect PubMed servers
 
@@ -109,11 +110,12 @@ YYMMDD_YYMMDD_Papers.xlsx
 Each Excel file contains multiple sheets:
 
 1. **Summary Sheet**: Collection statistics and journal counts
-2. **Papers Sheet**: All collected papers with complete information
+2. **Papers Sheet**: All collected papers with complete information + AutoFilter dropdowns
 3. **Keyword Sheets** (if keywords provided): 
    - Sheet name format: `Keyword=enzyme`, `Keyword=machine learning`
    - Contains only papers with the keyword in their title
    - **Keyword Highlighting**: Keywords in both Title and Abstract columns are highlighted in **red and bold**
+   - **AutoFilter Dropdowns**: Easy sorting and filtering by any column
    - Supports multiple keyword occurrences in the same text
 
 ### Example Output Sheets
