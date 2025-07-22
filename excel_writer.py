@@ -171,6 +171,9 @@ def write_to_excel(papers_data: List[Dict], start_date: str, end_date: str, keyw
                 for cell in worksheet_papers[col_letter]:
                     cell.alignment = Alignment(wrap_text=True, vertical='top')
 
+        # Add AutoFilter to Papers sheet
+        worksheet_papers.auto_filter.ref = worksheet_papers.dimensions
+
         # Set column widths for Summary sheet
         worksheet_summary.column_dimensions['A'].width = 25
         worksheet_summary.column_dimensions['B'].width = 40
@@ -202,6 +205,9 @@ def write_to_excel(papers_data: List[Dict], start_date: str, end_date: str, keyw
                                     # Create rich text with keyword highlighting
                                     rich_text = create_rich_text_with_keyword_highlighting(str(cell.value), keyword)
                                     cell.value = rich_text
+                    
+                    # Add AutoFilter to keyword sheet
+                    worksheet_keyword.auto_filter.ref = worksheet_keyword.dimensions
 
 
     print("\nSuccessfully created Excel file: {}".format(file_path))
