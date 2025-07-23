@@ -37,6 +37,26 @@ def filter_papers_by_keyword(papers_data: List[Dict], keyword: str) -> List[Dict
             filtered_papers.append(paper.copy())
     return filtered_papers
 
+def filter_papers_by_compound_keyword(papers_data: List[Dict], compound_keyword: str) -> List[Dict]:
+    """
+    Filters papers that contain ANY of the keywords connected by '+' in their title (case-insensitive).
+    For example, 'Alphafold+ESMfold' returns papers with either 'Alphafold' OR 'ESMfold' in title.
+    """
+    # Split compound keyword by '+' and clean up whitespace
+    sub_keywords = [k.strip() for k in compound_keyword.split('+') if k.strip()]
+    
+    if not sub_keywords:
+        return []
+    
+    filtered_papers = []
+    for paper in papers_data:
+        title = paper.get("Title", "").lower()
+        # Check if ANY of the sub-keywords is in the title (OR logic)
+        if any(sub_keyword.lower() in title for sub_keyword in sub_keywords):
+            filtered_papers.append(paper.copy())
+    
+    return filtered_papers
+
 def create_rich_text_with_keyword_highlighting(text: str, keyword: str) -> CellRichText:
     """
     Creates rich text with only the keyword highlighted in red and bold.
@@ -77,6 +97,91 @@ def create_rich_text_with_keyword_highlighting(text: str, keyword: str) -> CellR
     # Add remaining text after last keyword
     if last_end < len(text):
         rich_text.append(TextBlock(normal_font, text[last_end:]))
+    
+    return rich_text
+
+def create_rich_text_with_compound_keyword_highlighting(text: str, compound_keyword: str) -> CellRichText:
+    """
+    Creates rich text with all sub-keywords from compound keyword highlighted in red and bold.
+    For example, 'Alphafold+ESMfold' will highlight both 'Alphafold' and 'ESMfold' in the text.
+    Uses a simpler approach to avoid Excel corruption issues.
+    """
+    if not text or not compound_keyword or text == "N/A":
+        return CellRichText(text or "")
+    
+    # Split compound keyword by '+' and clean up whitespace
+    sub_keywords = [k.strip() for k in compound_keyword.split('+') if k.strip()]
+    
+    if not sub_keywords:
+        return CellRichText(text)
+    
+    # Use the same logic as single keyword highlighting but apply to each sub-keyword sequentially
+    # This approach is more stable and less prone to Excel corruption
+    result_text = text
+    text_lower = text.lower()
+    
+    # Check if any sub-keyword exists in the text
+    has_matches = any(sub_keyword.lower() in text_lower for sub_keyword in sub_keywords)
+    
+    if not has_matches:
+        return CellRichText(text)
+    
+    # Create fonts
+    normal_font = InlineFont()
+    highlight_font = InlineFont(color="FF0000", b=True)
+    
+    # Build a list of all matches across all keywords
+    all_matches = []
+    for sub_keyword in sub_keywords:
+        sub_keyword_lower = sub_keyword.lower()
+        start = 0
+        while True:
+            pos = text_lower.find(sub_keyword_lower, start)
+            if pos == -1:
+                break
+            # Store (start_pos, end_pos, original_text_slice)
+            all_matches.append((pos, pos + len(sub_keyword), text[pos:pos + len(sub_keyword)]))
+            start = pos + len(sub_keyword)  # Move past this match to avoid infinite loop
+    
+    if not all_matches:
+        return CellRichText(text)
+    
+    # Sort matches by start position and remove overlaps
+    all_matches.sort(key=lambda x: x[0])
+    filtered_matches = []
+    
+    for match in all_matches:
+        start_pos, end_pos, match_text = match
+        # Only add if it doesn't overlap with previous matches
+        if not filtered_matches or start_pos >= filtered_matches[-1][1]:
+            filtered_matches.append(match)
+    
+    # Build rich text safely
+    rich_text = CellRichText()
+    last_end = 0
+    
+    for start_pos, end_pos, match_text in filtered_matches:
+        # Add text before this match
+        if start_pos > last_end:
+            before_text = text[last_end:start_pos]
+            if before_text:  # Only add non-empty text blocks
+                rich_text.append(TextBlock(normal_font, before_text))
+        
+        # Add highlighted match
+        if match_text:  # Only add non-empty highlighted text
+            rich_text.append(TextBlock(highlight_font, match_text))
+        
+        last_end = end_pos
+    
+    # Add remaining text after last match
+    if last_end < len(text):
+        remaining_text = text[last_end:]
+        if remaining_text:  # Only add non-empty text blocks
+            rich_text.append(TextBlock(normal_font, remaining_text))
+    
+    # If no text blocks were added, return plain text
+    if len(rich_text) == 0:
+        return CellRichText(text)
     
     return rich_text
 
@@ -136,9 +241,17 @@ def write_to_excel(papers_data: List[Dict], start_date: str, end_date: str, keyw
         # --- Keyword-specific Sheets ---
         if keywords:
             for keyword in keywords:
-                filtered_papers = filter_papers_by_keyword(papers_data, keyword)
+                # Check if this is a compound keyword (contains '+')
+                if '+' in keyword:
+                    filtered_papers = filter_papers_by_compound_keyword(papers_data, keyword)
+                    sub_keywords = [k.strip() for k in keyword.split('+')]
+                    keyword_description = f"'{keyword}' (OR: {', '.join(sub_keywords)})"
+                else:
+                    filtered_papers = filter_papers_by_keyword(papers_data, keyword)
+                    keyword_description = f"'{keyword}'"
+                
                 if filtered_papers:
-                    print(f"Found {len(filtered_papers)} papers containing '{keyword}' in title.")
+                    print(f"Found {len(filtered_papers)} papers containing {keyword_description} in title.")
                     
                     # Create DataFrame for filtered papers
                     keyword_df = pd.DataFrame(filtered_papers)
@@ -154,7 +267,7 @@ def write_to_excel(papers_data: List[Dict], start_date: str, end_date: str, keyw
                         writer, sheet_name=sheet_name, index=False
                     )
                 else:
-                    print(f"No papers found containing '{keyword}' in title.")
+                    print(f"No papers found containing {keyword_description} in title.")
 
         # --- Apply Formatting ---
         worksheet_papers = writer.sheets["Papers"]
@@ -202,9 +315,23 @@ def write_to_excel(papers_data: List[Dict], start_date: str, end_date: str, keyw
                             col_letter = get_column_letter(i)
                             for row_idx, cell in enumerate(worksheet_keyword[col_letter], 1):
                                 if row_idx > 1 and cell.value:  # Skip header row
-                                    # Create rich text with keyword highlighting
-                                    rich_text = create_rich_text_with_keyword_highlighting(str(cell.value), keyword)
-                                    cell.value = rich_text
+                                    try:
+                                        # Create rich text with appropriate highlighting function
+                                        if '+' in keyword:
+                                            rich_text = create_rich_text_with_compound_keyword_highlighting(str(cell.value), keyword)
+                                        else:
+                                            rich_text = create_rich_text_with_keyword_highlighting(str(cell.value), keyword)
+                                        
+                                        # Validate rich text before applying (CellRichText acts like a list)
+                                        if rich_text and len(rich_text) > 0:
+                                            cell.value = rich_text
+                                        else:
+                                            # Fallback to plain text if rich text generation failed
+                                            cell.value = str(cell.value)
+                                    except Exception as e:
+                                        # If rich text fails, keep original text
+                                        print(f"Warning: Rich text highlighting failed for cell, using plain text: {e}")
+                                        cell.value = str(cell.value)
                     
                     # Add AutoFilter to keyword sheet
                     worksheet_keyword.auto_filter.ref = worksheet_keyword.dimensions
