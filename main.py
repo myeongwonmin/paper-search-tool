@@ -52,7 +52,9 @@ def get_date_range():
 def get_keywords():
     """Gets keywords from the user for filtering papers by title."""
     print("\nEnter keywords to filter papers by title.")
-    print("You can enter multiple keywords separated by commas (e.g., enzyme, e. coli, deep learning)")
+    print("You can enter multiple keywords separated by commas for separate sheets (e.g., enzyme, e. coli, deep learning)")
+    print("Use + to connect keywords for OR logic in a single sheet (e.g., Alphafold+ESMfold)")
+    print("You can mix both: enzyme, protein+fold, ML creates 3 sheets")
     print("Leave empty to skip keyword filtering.")
     
     keywords_input = input("Enter keywords: ").strip()
@@ -64,7 +66,15 @@ def get_keywords():
     keywords = [keyword.strip() for keyword in keywords_input.split(",") if keyword.strip()]
     
     if keywords:
-        print(f"Keywords to search for: {', '.join(keywords)}")
+        # Display parsed keywords with their types
+        display_keywords = []
+        for keyword in keywords:
+            if '+' in keyword:
+                sub_keywords = [k.strip() for k in keyword.split('+')]
+                display_keywords.append(f"{keyword} (OR: {', '.join(sub_keywords)})")
+            else:
+                display_keywords.append(keyword)
+        print(f"Keywords to search for: {'; '.join(display_keywords)}")
     
     return keywords
 
