@@ -75,9 +75,18 @@ python main.py
 - **Specific Date Range**: Enter start and end dates in YYYY/MM/DD format
 - **Recent Days**: Enter number of recent days to search (e.g., 7 for last week)
 
-#### 2. Keyword Filtering (New Feature!)
+#### 2. Keyword Filtering (Enhanced Feature!)
 After selecting dates, you can enter keywords to create filtered sheets:
-- Enter multiple keywords separated by commas
+
+**Two keyword input methods:**
+- **Comma-separated**: Creates separate sheets for each keyword
+  - Example: `enzyme, machine learning, CRISPR` → 3 separate sheets
+- **Plus-connected (OR logic)**: Creates single sheet with papers matching ANY keyword
+  - Example: `Alphafold+ESMfold+RoseTTAFold` → 1 sheet with papers containing any of these terms
+- **Mixed usage**: Combine both methods
+  - Example: `enzyme, protein+fold, ML` → 3 sheets (1 for enzyme, 1 for protein OR fold, 1 for ML)
+
+**Matching features:**
 - Case-insensitive matching ("enzyme" matches "Enzyme", "ENZYME")
 - Partial word matching ("enzyme" matches "enzymes", "enzymatic")
 - Leave empty to skip keyword filtering
@@ -92,10 +101,12 @@ Enter your choice (1 or 2): 2
 Enter number of recent days to search: 7
 
 Enter keywords to filter papers by title.
-You can enter multiple keywords separated by commas (e.g., enzyme, e. coli, deep learning)
+You can enter multiple keywords separated by commas for separate sheets (e.g., enzyme, e. coli, deep learning)
+Use + to connect keywords for OR logic in a single sheet (e.g., Alphafold+ESMfold)
+You can mix both: enzyme, protein+fold, ML creates 3 sheets
 Leave empty to skip keyword filtering.
-Enter keywords: enzyme, machine learning, CRISPR
-Keywords to search for: enzyme, machine learning, CRISPR
+Enter keywords: enzyme, Alphafold+ESMfold, machine learning
+Keywords to search for: enzyme; Alphafold+ESMfold (OR: Alphafold, ESMfold); machine learning
 ```
 
 ## Output
@@ -112,26 +123,28 @@ Each Excel file contains multiple sheets:
 1. **Summary Sheet**: Collection statistics and journal counts
 2. **Papers Sheet**: All collected papers with complete information + AutoFilter dropdowns
 3. **Keyword Sheets** (if keywords provided): 
-   - Sheet name format: `Keyword=enzyme`, `Keyword=machine learning`
-   - Contains only papers with the keyword in their title
-   - **Keyword Highlighting**: Keywords in both Title and Abstract columns are highlighted in **red and bold**
+   - Sheet name format: `Keyword=enzyme`, `Keyword=Alphafold+ESMfold`
+   - **Simple keywords**: Contains papers with the keyword in their title
+   - **Compound keywords (OR logic)**: Contains papers with ANY of the + connected keywords in title
+   - **Keyword Highlighting**: All matching keywords in both Title and Abstract columns are highlighted in **red and bold**
    - **AutoFilter Dropdowns**: Easy sorting and filtering by any column
    - Supports multiple keyword occurrences in the same text
 
 ### Example Output Sheets
 ```
 📄 250719_250722_Papers.xlsx
-├── Summary              # Collection statistics
-├── Papers               # All 156 papers found
-├── Keyword=enzyme       # 12 papers containing "enzyme"
-├── Keyword=machine learning # 8 papers containing "machine learning"
-└── Keyword=CRISPR       # 5 papers containing "CRISPR"
+├── Summary                    # Collection statistics
+├── Papers                     # All 156 papers found
+├── Keyword=enzyme             # 12 papers containing "enzyme"
+├── Keyword=Alphafold+ESMfold  # 8 papers containing "Alphafold" OR "ESMfold"
+└── Keyword=machine learning   # 5 papers containing "machine learning"
 ```
 
 ### Keyword Highlighting Features
 - **Smart Matching**: Case-insensitive and partial word matching
 - **Visual Highlighting**: Keywords appear in **red and bold** in Excel
 - **Multiple Occurrences**: All keyword instances in the same cell are highlighted
+- **Compound Keywords**: For OR logic keywords (e.g., `Alphafold+ESMfold`), all matching sub-keywords are highlighted
 - **Both Columns**: Highlighting applied to both Title and Abstract columns
 
 ## Project Structure
