@@ -14,12 +14,15 @@ A Python tool for automatically searching and collecting research papers from mu
 
 ## Supported Journals
 
-The tool searches across 39 leading journals in life sciences, biotechnology, and related fields:
+The tool searches across 38 leading journals in life sciences, biotechnology, and related fields:
 
-- **Nature Family**: Nature, Nature Biotechnology, Nature Methods, Nature Communications, etc.
-- **Cell Family**: Cell, Cell Systems, Cell Reports, Cell Chemical Biology
+- **Nature Family**: Nature, Nature Biotechnology, Nature Methods, Nature Communications, Nature Biomedical Engineering, Nature Chemistry, etc.
+- **Cell Family**: Cell, Cell Systems, Cell Reports, Cell Chemical Biology, Molecular Cell
 - **Science**: Science, Science Advances
-- **Specialized Journals**: Bioinformatics, PNAS, Protein Science, Chemical Science
+- **ACS Journals**: ACS Synthetic Biology, ACS Chemical Biology
+- **Specialized Journals**: Bioinformatics, PNAS, Protein Science, Chemical Science, Applied and Environmental Microbiology
+- **Engineering & Technology**: Biotechnology and Bioengineering, Metabolic Engineering
+- **Bioinformatics**: Briefings in Bioinformatics, PLOS Computational Biology
 - **Review Journals**: Trends in Biotechnology, Annual Review of Microbiology
 
 *See [config.py](config.py) for the complete list.*
@@ -184,7 +187,8 @@ This tool uses the free PubMed E-utilities API:
 
 Feel free to submit issues and enhancement requests. To add new journals:
 1. Edit the `JOURNAL_LIST` in `config.py`
-2. Update the journal count in this README
+2. Ensure journal names match exact PubMed indexing names
+3. Update the journal count in this README
 
 ## License
 
