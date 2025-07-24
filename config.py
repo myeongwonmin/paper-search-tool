@@ -5,9 +5,13 @@ Configuration file for the PubMed paper pipeline.
 """
 
 JOURNAL_LIST = [
+    "ACS Chemical Biology", 
     "ACS Synthetic Biology",
     "Annual Review of Microbiology",
+    "Applied and Environmental Microbiology",
     "Bioinformatics",
+    "Biotechnology and Bioengineering",
+    "Briefings in Bioinformatics",
     "Cell",
     "Cell Chemical Biology",
     "Cell Reports",
@@ -15,10 +19,13 @@ JOURNAL_LIST = [
     "Chemical Science",
     "Current Opinion in Biotechnology",
     "Metabolic Engineering",
+    "Molecular Cell",
     "Nature",
+    "Nature Biomedical Engineering",
     "Nature Biotechnology",
     "Nature Catalysis",
     "Nature Chemical Biology",
+    "Nature Chemistry",
     "Nature Communications",
     "Nature Computational Science",
     "Nature Machine Intelligence",
