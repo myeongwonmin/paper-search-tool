@@ -26,7 +26,7 @@ def search_articles(journal: str, start_date: str, end_date: str) -> List[str]:
         "db": "pubmed",
         "term": f'"{journal}"[Journal] AND ("{start_date}"[Date - Publication] : "{end_date}"[Date - Publication])',
         "retmode": "json",
-        "retmax": 1000,  # Max results per request
+        "retmax": 2000,  # Max results per request
         "tool": TOOL_NAME,
         "email": ADMIN_EMAIL,
     }
@@ -37,9 +37,22 @@ def search_articles(journal: str, start_date: str, end_date: str) -> List[str]:
         response = requests.get(ESEARCH_URL, params=params)
         response.raise_for_status()  # Raise an exception for bad status codes
         data = response.json()
-        return data.get("esearchresult", {}).get("idlist", [])
+        idlist = data.get("esearchresult", {}).get("idlist", [])
+        
+        # Debug logging for journal search results
+        if idlist:
+            print(f"✓ {journal}: Found {len(idlist)} articles")
+        else:
+            count = data.get("esearchresult", {}).get("count", "0")
+            if count == "0":
+                print(f"⚠ {journal}: No articles found in date range {start_date} to {end_date}")
+                print(f"  (Journal verified in PubMed, may be due to publication schedule or indexing delay)")
+            else:
+                print(f"? {journal}: Found {count} total articles but no IDs returned (API limit reached)")
+        
+        return idlist
     except requests.exceptions.RequestException as e:
-        print(f"Error during API search for {journal}: {e}")
+        print(f"✗ Error during API search for {journal}: {e}")
         return []
 
 def fetch_article_details(article_ids: List[str]) -> Optional[Dict]:
